@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'api',
+    # 'api',
     'corsheaders',
     'rest_framework',
 ]
@@ -96,14 +96,14 @@ WSGI_APPLICATION = 'catbot_django.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-        'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'your_database_name',
-        'USER': 'your_database_user',
-        'PASSWORD': 'your_database_password',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    #     'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'your_database_name',
+    #     'USER': 'your_database_user',
+    #     'PASSWORD': 'your_database_password',
+    #     'HOST': 'localhost',
+    #     'PORT': '5432',
+    # }
 }
 
 
