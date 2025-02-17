@@ -1,42 +1,63 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background-color: white; /* Secondary color */
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.chat-box {
+  width: 80%;
+  max-width: 600px;
+  height: 70vh;
+  border: 1px solid red; /* Primary color */
+  border-radius: 10px;
+  padding: 10px;
+  overflow-y: auto;
+  background-color: white; /* Secondary color */
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.message {
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 10px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.message.bot {
+  background-color: #ffcccc; /* Light red for bot messages */
+  align-self: flex-start;
 }
 
-.card {
-  padding: 2em;
+.message.user {
+  background-color: #ffe6e6; /* Lighter red for user messages */
+  align-self: flex-end;
 }
 
-.read-the-docs {
-  color: #888;
+.input-box {
+  display: flex;
+  width: 80%;
+  max-width: 600px;
+  margin-top: 10px;
+}
+
+input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid red; /* Primary color */
+  border-radius: 10px 0 0 10px;
+  background-color: white; /* Secondary color */
+}
+
+button {
+  padding: 10px;
+  border: 1px solid red; /* Primary color */
+  border-radius: 0 10px 10px 0;
+  background-color: red; /* Primary color */
+  color: white; /* Secondary color */
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #cc0000; /* Darker red on hover */
 }
