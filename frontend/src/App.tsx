@@ -1,27 +1,48 @@
 import { useState } from 'react'
 import './App.css'
-import { useEffect } from 'react'
-import api from './api'
+import api from './api';
+
+interface Message {
+  text: string;
+  sender: 'user' | 'bot';
+}
+
+interface ChatResponse {
+  response: string;
+}
+
 
 function App() {
-  const [messages, setMessages] = useState([{ text: 'Lets chat!', sender: 'bot' }]);
+  const [messages, setMessages] = useState<Message[]>([{ text: 'Lets chat!', sender: 'bot' }]);
   const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (input.trim()) {
-      setMessages([...messages, { text: input, sender: 'user' }]);
-      setInput('');
-      // Simulate bot response
-      setTimeout(() => {
-        setMessages(prevMessages => [...prevMessages, { text: 'This is a bot response.', sender: 'bot' }]);
-      }, 1000);
+      setMessages(prev => [...prev, { text: input, sender: 'user' }]);
+      setIsLoading(true);
+
+      try {
+        const response = await api.post<ChatResponse>('/chat/', {
+          message: input
+        });
+
+        setMessages(prev => [...prev, {
+          text: response.data.response,
+          sender: 'bot'
+        }]);
+      } catch (error) {
+        console.error('Chat API Error:', error);
+        setMessages(prev => [...prev, {
+          text: 'Sorry, I encountered an error. Please try again.',
+          sender: 'bot'
+        }]);
+      } finally {
+        setIsLoading(false);
+        setInput('');
+      }
     }
   };
-
-  fetch('http://localhost:8000/api/test')
-    .then(response => response.json())
-    .then(data => console.log('Backend response:', data))
-    .catch(error => console.error('Error:', error));
 
   return (
     <div className="chat-container">
@@ -34,10 +55,10 @@ function App() {
         ))}
       </div>
       <div className="input-box">
-        <input 
-          type="text" 
-          value={input} 
-          onChange={(e) => setInput(e.target.value)} 
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && handleSend()}
         />
         <button onClick={handleSend}>Send</button>
@@ -45,4 +66,5 @@ function App() {
     </div>
   );
 }
+
 export default App
