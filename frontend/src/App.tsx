@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import './App.css'
+import { useEffect } from 'react'
+import api from './api'
 
 function App() {
   const [messages, setMessages] = useState([{ text: 'Lets chat!', sender: 'bot' }]);
@@ -15,6 +17,11 @@ function App() {
       }, 1000);
     }
   };
+
+  fetch('http://localhost:8000/api/test')
+    .then(response => response.json())
+    .then(data => console.log('Backend response:', data))
+    .catch(error => console.error('Error:', error));
 
   return (
     <div className="chat-container">
@@ -38,5 +45,4 @@ function App() {
     </div>
   );
 }
-
 export default App

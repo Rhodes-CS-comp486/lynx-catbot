@@ -55,9 +55,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'api',
+    # 'api',
     'corsheaders',
     'rest_framework',
+    'catbot_django',
+    'core',
+
 ]
 
 MIDDLEWARE = [
@@ -95,17 +98,24 @@ WSGI_APPLICATION = 'catbot_django.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+'''
 DATABASES = {
-        'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'your_database_name',
-        'USER': 'your_database_user',
-        'PASSWORD': 'your_database_password',
-        'HOST': 'localhost',
-        'PORT': '5432',
+    #     'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'your_database_name',
+    #     'USER': 'your_database_user',
+    #     'PASSWORD': 'your_database_password',
+    #     'HOST': 'localhost',
+    #     'PORT': '5432',
+    # }
+}
+'''
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -147,3 +157,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+<<<<<<< HEAD
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
+=======
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
+>>>>>>> f6456b0ad9503b38b28ca001b6b202c6b7bb0228
