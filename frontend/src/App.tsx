@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import './App.css'
+import { useState, useEffect } from 'react';
+import './App.css';
 import api from './api';
 
 interface Message {
@@ -11,32 +11,65 @@ interface ChatResponse {
   response: string;
 }
 
+interface FixedContent {
+  id: number;
+  category: string;
+  subcategory: string;
+  question: string;
+  answer: string;
+}
 
 function App() {
-  const [messages, setMessages] = useState<Message[]>([{ text: 'Lets chat!', sender: 'bot' }]);
+  const [messages, setMessages] = useState<Message[]>([
+    { text: 'Let’s chat!', sender: 'bot' }
+  ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [fixedContent, setFixedContent] = useState<FixedContent[]>([]);
+
+  // Fetch FixedContent from backend on mount
+  useEffect(() => {
+    const fetchFixedContent = async () => {
+      try {
+        const response = await api.get('/fixed-content/', {
+          headers: {
+            Authorization: `Token ${localStorage.getItem('authToken')}`, // Adjust based on your auth method
+          },
+        });
+        setFixedContent(response.data);
+      } catch (error) {
+        console.error('Error fetching fixed content:', error);
+      }
+    };
+
+    fetchFixedContent();
+  }, []);
 
   const handleSend = async () => {
     if (input.trim()) {
-      setMessages(prev => [...prev, { text: input, sender: 'user' }]);
+      const userMessage = { text: input, sender: 'user' };
+      setMessages(prev => [...prev, userMessage]);
       setIsLoading(true);
 
-      try {
-        const response = await api.post<ChatResponse>('/chat/', {
-          message: input
-        });
+      // Check if input matches a FixedContent question
+      const foundContent = fixedContent.find(
+        (item) => item.question.toLowerCase() === input.toLowerCase()
+      );
 
-        setMessages(prev => [...prev, {
-          text: response.data.response,
-          sender: 'bot'
-        }]);
+      if (foundContent) {
+        setMessages(prev => [...prev, { text: foundContent.answer, sender: 'bot' }]);
+        setIsLoading(false);
+        setInput('');
+        return;
+      }
+
+      // If no FixedContent match, call chatbot API
+      try {
+        const response = await api.post<ChatResponse>('/chat/', { message: input });
+        setMessages(prev => [...prev, { text: response.data.response, sender: 'bot' }]);
       } catch (error) {
         console.error('Chat API Error:', error);
-        setMessages(prev => [...prev, {
-          text: 'Sorry, I encountered an error. Please try again.',
-          sender: 'bot'
-        }]);
+        setMessages(prev => [...prev, { text: 'Sorry, an error occurred.', sender: 'bot' }]);
       } finally {
         setIsLoading(false);
         setInput('');
@@ -67,4 +100,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
