@@ -37,6 +37,7 @@ function App() {
           },
         });
         setFixedContent(response.data);
+        console.log(response.data)
       } catch (error) {
         console.error('Error fetching fixed content:', error);
       }
@@ -44,6 +45,7 @@ function App() {
 
     fetchFixedContent();
   }, []);
+
 
   const handleSend = async () => {
     if (input.trim()) {
