@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'catbot_django',
     'core',
-
 ]
 
 MIDDLEWARE = [
@@ -79,7 +78,7 @@ ROOT_URLCONF = 'catbot_django.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -98,7 +97,6 @@ WSGI_APPLICATION = 'catbot_django.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-'''
 DATABASES = {
     #     'default': {
     #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -108,14 +106,12 @@ DATABASES = {
     #     'HOST': 'localhost',
     #     'PORT': '5432',
     # }
-}
-'''
-DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.sqlite3',  # This is for SQLite
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -158,13 +154,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-<<<<<<< HEAD
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
-=======
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-]
->>>>>>> f6456b0ad9503b38b28ca001b6b202c6b7bb0228
+COTS_ALLOW_ALL_ORIGINS = True

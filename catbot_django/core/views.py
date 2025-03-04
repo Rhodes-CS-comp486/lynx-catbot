@@ -1,7 +1,18 @@
-from django.shortcuts import render
+from rest_framework import generics
 from .models import FixedContent
+from .serializers import FixedContentSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import AllowAny
 
-# Create your views here.
-def fixed_content(request):
-    data = FixedContent.objects.all()
-    return render(request, 'fixed_content_template.html',{'data': data})
+class FixedContentList(generics.ListCreateAPIView):
+  queryset = FixedContent.objects.all()
+  serializer_class = FixedContentSerializer
+  permission_classes = [AllowAny]
+  
+
+
+class FixedContentDetail(generics.RetrieveUpdateDestroyAPIView):
+  queryset = FixedContent.objects.all()
+  serializer_class = FixedContentSerializer
+  permission_classes = [AllowAny]
+

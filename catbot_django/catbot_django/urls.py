@@ -21,5 +21,6 @@ from core import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('FixedContent/', views.fixed_content, name='fixed_content'),
+    path('fixed-content/', views.FixedContentList.as_view(), name='fixedcontent-list'),
+    path('fixed-content/<int:pk>/', views.FixedContentDetail.as_view(), name='fixed-content-detail'), 
 ]

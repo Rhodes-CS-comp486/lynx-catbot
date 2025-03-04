@@ -1,21 +1,23 @@
+/*
+
 .chat-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
   justify-content: center;
   align-items: center;
-  background-color: white; /* Secondary color */
+  background-color: white; /* Secondary color 
 }
 
 .chat-box {
   width: 80%;
   max-width: 600px;
   height: 70vh;
-  border: 1px solid red; /* Primary color */
+  border: 1px solid red; /* Primary color 
   border-radius: 10px;
   padding: 10px;
   overflow-y: auto;
-  background-color: white; /* Secondary color */
+  background-color: white; /* Secondary color 
 }
 
 .message {
@@ -25,12 +27,12 @@
 }
 
 .message.bot {
-  background-color: #ffcccc; /* Light red for bot messages */
+  background-color: #ffcccc; /* Light red for bot messages
   align-self: flex-start;
 }
 
 .message.user {
-  background-color: #ffe6e6; /* Lighter red for user messages */
+  background-color: #ffe6e6; /* Lighter red for user messages 
   align-self: flex-end;
 }
 
@@ -44,20 +46,20 @@
 input {
   flex: 1;
   padding: 10px;
-  border: 1px solid red; /* Primary color */
+  border: 1px solid red; /* Primary color 
   border-radius: 10px 0 0 10px;
-  background-color: white; /* Secondary color */
+  background-color: white; /* Secondary color 
 }
 
 button {
   padding: 10px;
-  border: 1px solid red; /* Primary color */
+  border: 1px solid red; /* Primary color 
   border-radius: 0 10px 10px 0;
-  background-color: red; /* Primary color */
-  color: white; /* Secondary color */
+  background-color: red; /* Primary color 
+  color: white; /* Secondary color 
   cursor: pointer;
 }
 
 button:hover {
-  background-color: #cc0000; /* Darker red on hover */
+  background-color: #cc0000; /* Darker red on hover 
 }
