@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
-import os 
+import os
 
 
 load_dotenv()
@@ -98,18 +98,18 @@ WSGI_APPLICATION = 'catbot_django.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    #     'default': {
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #     'NAME': 'your_database_name',
-    #     'USER': 'your_database_user',
-    #     'PASSWORD': 'your_database_password',
-    #     'HOST': 'localhost',
-    #     'PORT': '5432',
-    # }
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',  # This is for SQLite
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'chatbot',
+        'USER': 'chatbot',
+        'PASSWORD': 'chatbot',
+        'HOST': 'dbclass.rhodescs.org',
+        'PORT': '5432',
     }
+    #'default': {
+        #'ENGINE': 'django.db.backends.sqlite3',  # This is for SQLite
+        #'NAME': BASE_DIR / 'db.sqlite3',
+    #}
 }
 
 
