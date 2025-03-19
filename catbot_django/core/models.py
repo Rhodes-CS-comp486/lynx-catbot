@@ -14,3 +14,6 @@ class FixedContent(models.Model):
     def __str__(self):
         return f"{self.subcategory} - {self.question[:50]}"
     
+
+
+
