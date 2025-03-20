@@ -4,8 +4,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Send, User, Bot } from 'lucide-react'
 import api from '@/api'
-import { get } from 'http'
-import { preview } from 'vite'
 
 interface Message {
   id: number;
@@ -35,6 +33,7 @@ const ChatbotUI = () => {
     "Major requirements?",
     "Housing",
     "Food and Dining",
+    "Computer Science"
   ];
 
   useEffect(() => {
@@ -55,23 +54,44 @@ const ChatbotUI = () => {
 
   }, []);
 
-  const getResponse = async (inputValue: object) => {
+  const getResponse = async (request: Request) => {
     try {
       setIsLoading(true);
+
       const response = await api.get("fixed-content/", {
         headers: {
           Authorization: `Token ${localStorage.getItem("authToken")}`,
         },
+        params: {
+          category: request.category,
+          subcategory: request.subcategory,
+          question: request.question,
+        },
       });
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { id: Date.now(), type: "dynamic", text: response.data, sender: "bot" },
-      ]);
+
+      if (response.data && response.data.length > 0) {
+        const answer = response.data[0].answer;
+
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { id: Date.now(), text: answer, sender: "bot" },
+        ]);
+      } else {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { id: Date.now(), text: "I'm sorry, I don't have an answer for that question.", sender: "bot" },
+        ]);
+      }
     } catch (error) {
       console.error("Error fetching response:", error);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { id: Date.now(), text: "Sorry, there was an error processing your request.", sender: "bot" },
+      ]);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false)
-  }
+  };
 
   const handleSend = async () => {
     if (inputValue.trim()) {
@@ -80,13 +100,19 @@ const ChatbotUI = () => {
         { id: Date.now(), text: inputValue, sender: "user" },
       ]);
 
-      // setRequest((prevRequest) => [
-      //   ...prevRequest,
+      const newRequest: Request = {
+        id: Date.now(),
+        type: "fixed",
+        category: "",
+        subcategory: "",
+        question: inputValue
+      };
 
-      //   {}]);
+      setRequest((prevRequests) => [...prevRequests, newRequest]);
 
-      setInputValue(() => "");
+      setInputValue("")
       console.log(messages)
+      await getResponse(newRequest)
     };
 
   };
@@ -141,7 +167,7 @@ const ChatbotUI = () => {
             className="flex-1"
           />
           <Button onClick={handleSend} size="icon" className="bg-black-500 hover:bg-blue-600">
-            <Send size={18} className="text-black" />
+            <Send size={18} className="text-white" />
           </Button>
         </CardFooter>
       </div>

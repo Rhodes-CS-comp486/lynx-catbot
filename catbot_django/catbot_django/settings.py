@@ -105,6 +105,9 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
+        'TEST': {
+          'MIRROR': 'default',
+        }
     }
     #'default': {
         #'ENGINE': 'django.db.backends.sqlite3',  # This is for SQLite
