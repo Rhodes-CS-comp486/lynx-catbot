@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardFooter } from '@/components/ui/Card'
+import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { generateContent }  from '@/components/ui/Modal'
 import { Send, User, Bot } from 'lucide-react'
 import api from '@/api'
 import { get } from 'http'
@@ -73,6 +74,7 @@ const ChatbotUI = () => {
     setIsLoading(false)
   }
 
+  //write ai stuff here
   const handleSend = async () => {
     if (inputValue.trim()) {
       setMessages((prevMessages) => [
@@ -80,15 +82,25 @@ const ChatbotUI = () => {
         { id: Date.now(), text: inputValue, sender: "user" },
       ]);
 
-      // setRequest((prevRequest) => [
-      //   ...prevRequest,
+      setInputValue("");
 
-      //   {}]);
-
-      setInputValue(() => "");
-      console.log(messages)
-    };
-
+      try {
+        setIsLoading(true);
+        const response = await generateContent(inputValue);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { id: Date.now(), text: response, sender: "bot" },
+        ]);
+      } catch (error) {
+        console.error("Error generating content:", error);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { id: Date.now(), text: "Sorry, an error occurred.", sender: "bot" },
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    }
   };
 
   const handleSuggestionClick = (suggestion: string) => {
