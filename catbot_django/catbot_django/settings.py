@@ -99,12 +99,15 @@ WSGI_APPLICATION = 'catbot_django.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'chatbot',
-        'USER': 'chatbot',
-        'PASSWORD': 'chatbot',
-        'HOST': 'dbclass.rhodescs.org',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
+        'TEST': {
+          'MIRROR': 'default',
+        }
     }
     #'default': {
         #'ENGINE': 'django.db.backends.sqlite3',  # This is for SQLite
