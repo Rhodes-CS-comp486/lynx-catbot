@@ -6,6 +6,16 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response 
 
+from django.conf import settings
+from rest_framework.permissions import IsAuthenticated
+
+
+class GetAPIKey(APIView):
+  permission_classes = [AllowAny] # Change this once we add admin privileges
+  def get(self, request):
+    return Response({"gemini_key": settings.GEMINI_KEY})
+
+
 class FixedContentList(generics.ListCreateAPIView):
 
 
@@ -27,6 +37,8 @@ class FixedContentList(generics.ListCreateAPIView):
       queryset = queryset.filter(question__icontains=question)
 
     return queryset
+
+
   # queryset = FixedContent.objects.all()
 
   
@@ -58,3 +70,4 @@ class FixedContentDetail(generics.RetrieveUpdateDestroyAPIView):
   queryset = FixedContent.objects.all()
   serializer_class = FixedContentSerializer
   permission_classes = [AllowAny]
+
