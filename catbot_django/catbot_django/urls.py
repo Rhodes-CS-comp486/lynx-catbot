@@ -23,4 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('fixed-content/', views.FixedContentList.as_view(), name='fixedcontent-list'),
     path('fixed-content/<int:pk>/', views.FixedContentDetail.as_view(), name='fixed-content-detail'), 
+    path('get-api-key/', views.GetAPIKey, name='get-api-key'),
 ]
