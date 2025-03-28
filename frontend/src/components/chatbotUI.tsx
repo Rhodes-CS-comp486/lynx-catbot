@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { generateContent } from './Modal'
 import { Send, User, Bot } from 'lucide-react'
+import { ClipLoader } from 'react-spinners'
 import api from '@/api'
 
 interface Message {
@@ -71,6 +72,7 @@ const ChatbotUI = () => {
       });
 
       if (response.data && response.data.length > 0) {
+        console.log(response.data)
         const answer = response.data[0].answer;
 
         setMessages((prevMessages) => [
@@ -107,17 +109,20 @@ const ChatbotUI = () => {
     }
   }
 
-  const handleSend = async () => {
-    if (!inputValue.trim()) return;
+  const handleSend = async (text?: string) => {
+
+    const query = text ?? inputValue.trim();
+
+    if (!query) return;
 
     setMessages((prevMessages) => [
       ...prevMessages,
-      { id: Date.now(), text: inputValue, sender: "user" },
+      { id: Date.now(), text: query, sender: "user" },
     ]);
 
     setInputValue("");
 
-    const isFixedQuery = suggestions.includes(inputValue);
+    const isFixedQuery = suggestions.includes(query);
 
     if (isFixedQuery) {
       const newCoreRequest: Request = {
@@ -125,13 +130,13 @@ const ChatbotUI = () => {
         type: "fixed",
         category: "",
         subcategory: "",
-        question: inputValue
+        question: query
       };
 
       setRequest((prevRequests) => [...prevRequests, newCoreRequest]);
       await getCoreResponse(newCoreRequest)
     } else {
-      const aiResponse = await getGeminiResponse(inputValue);
+      const aiResponse = await getGeminiResponse(query);
       setMessages((prevMessages) => [
         ...prevMessages,
         { id: Date.now(), text: aiResponse, sender: "bot" },
@@ -141,8 +146,7 @@ const ChatbotUI = () => {
 
 
   const handleSuggestionClick = async (suggestion: string) => {
-    setInputValue(suggestion);
-    await handleSend();
+    await handleSend(suggestion);
   };
 
   const handleKeyPress = (e: any) => {
@@ -167,6 +171,11 @@ const ChatbotUI = () => {
             </div>
           </div>
         ))}
+        {isLoading && (
+          <div className='flex justify-center'>
+            <ClipLoader color='#000' size={50} />
+          </div>
+        )}
       </CardContent>
 
       <div className="p-2 border-t border-gray-200 bg-white">
