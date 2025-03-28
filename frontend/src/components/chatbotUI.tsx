@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { genenrateContent } from './Modal'
+import { generateContent } from './Modal'
 import { Send, User, Bot } from 'lucide-react'
+import { ClipLoader } from 'react-spinners'
 import api from '@/api'
 
 interface Message {
@@ -55,7 +56,7 @@ const ChatbotUI = () => {
 
   }, []);
 
-  const getResponse = async (request: Request) => {
+  const getCoreResponse = async (request: Request) => {
     try {
       setIsLoading(true);
 
@@ -71,6 +72,7 @@ const ChatbotUI = () => {
       });
 
       if (response.data && response.data.length > 0) {
+        console.log(response.data)
         const answer = response.data[0].answer;
 
         setMessages((prevMessages) => [
@@ -94,51 +96,57 @@ const ChatbotUI = () => {
     }
   };
 
+  const getGeminiResponse = async (query: string) => {
+    try {
+      setIsLoading(true);
+      const response = await generateContent(query);
+      return response;
+    } catch (error) {
+      console.error("Error generating content:", error);
+      return "Sorry, an error ocurred"
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
-  //write ai stuff here
-  const handleSend = async () => {
-    if (inputValue.trim()) {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { id: Date.now(), text: inputValue, sender: "user" },
-      ]);
+  const handleSend = async (text?: string) => {
 
-      const newRequest: Request = {
+    const query = text ?? inputValue.trim();
+
+    if (!query) return;
+
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { id: Date.now(), text: query, sender: "user" },
+    ]);
+
+    setInputValue("");
+
+    const isFixedQuery = suggestions.includes(query);
+
+    if (isFixedQuery) {
+      const newCoreRequest: Request = {
         id: Date.now(),
         type: "fixed",
         category: "",
         subcategory: "",
-        question: inputValue
+        question: query
       };
 
-      setRequest((prevRequests) => [...prevRequests, newRequest]);
-
-      setInputValue("")
-      console.log(messages)
-      await getResponse(newRequest)
-    };
-
-    try {
-      setIsLoading(true);
-      const response = await generateContent(inputValue);
+      setRequest((prevRequests) => [...prevRequests, newCoreRequest]);
+      await getCoreResponse(newCoreRequest)
+    } else {
+      const aiResponse = await getGeminiResponse(query);
       setMessages((prevMessages) => [
         ...prevMessages,
-        { id: Date.now(), text: response, sender: "bot" },
-      ]);
-    } catch (error) {
-      console.error("Error generating content:", error);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { id: Date.now(), text: "Sorry, an error occurred.", sender: "bot" },
-      ]);
-    } finally {
-      setIsLoading(false);
+        { id: Date.now(), text: aiResponse, sender: "bot" },
+      ])
     }
   };
 
 
-  const handleSuggestionClick = (suggestion: string) => {
-    setInputValue(suggestion);
+  const handleSuggestionClick = async (suggestion: string) => {
+    await handleSend(suggestion);
   };
 
   const handleKeyPress = (e: any) => {
@@ -163,6 +171,11 @@ const ChatbotUI = () => {
             </div>
           </div>
         ))}
+        {isLoading && (
+          <div className='flex justify-center'>
+            <ClipLoader color='#000' size={50} />
+          </div>
+        )}
       </CardContent>
 
       <div className="p-2 border-t border-gray-200 bg-white">

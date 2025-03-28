@@ -25,3 +25,4 @@ urlpatterns = [
     path('fixed-content/<int:pk>/', views.FixedContentDetail.as_view(), name='fixed-content-detail'), 
     path('get-api-key/', views.GetAPIKey.as_view(), name='get-api-key'),
 ]
+
