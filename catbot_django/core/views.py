@@ -13,7 +13,10 @@ from rest_framework.permissions import IsAuthenticated
 class GetAPIKey(APIView):
   permission_classes = [AllowAny] # Change this once we add admin privileges
   def get(self, request):
-    return Response({"gemini_key": settings.GEMINI_KEY})
+    gemini_key = getattr(settings, "GEMINI_KEY", None)
+    if not gemini_key:
+      return Response({"error":"Gemini Key is not set"}, status=500)
+    return Response({"gemini_key": gemini_key})
 
 
 class FixedContentList(generics.ListCreateAPIView):

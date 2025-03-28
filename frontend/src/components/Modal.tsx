@@ -7,7 +7,7 @@ let model: any = null;
 const fetchAPIKey = async (): Promise<string | null> => {
   try {
     const response = await api.get("get-api-key/");
-    return response.data.api_key || null;
+    return response.data.gemini_key || null;
   } catch (error) {
     console.error("Error fetching API key:", error);
     return null;
@@ -15,6 +15,7 @@ const fetchAPIKey = async (): Promise<string | null> => {
 }
 
 const initGenAI = async () => {
+  if (model) return;
   const apiKey = await fetchAPIKey();
   if (apiKey) {
     genAI = new GoogleGenerativeAI(apiKey)
@@ -32,6 +33,13 @@ initGenAI()
 // const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 export const generateContent = async (prompt: string) => {
+  if (!model) {
+    await initGenAI();
+    if (!model) {
+      throw new Error("Failed to initiaize model")
+    }
+  }
+
   const result = await model.generateContent(prompt);
   console.log(result.response.text());
   return result.response.text();

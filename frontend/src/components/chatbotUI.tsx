@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { genenrateContent } from './Modal'
+import { generateContent } from './Modal'
 import { Send, User, Bot } from 'lucide-react'
 import api from '@/api'
 
@@ -55,7 +55,7 @@ const ChatbotUI = () => {
 
   }, []);
 
-  const getResponse = async (request: Request) => {
+  const getCoreResponse = async (request: Request) => {
     try {
       setIsLoading(true);
 
@@ -94,16 +94,33 @@ const ChatbotUI = () => {
     }
   };
 
+  const getGeminiResponse = async (query: string) => {
+    try {
+      setIsLoading(true);
+      const response = await generateContent(query);
+      return response;
+    } catch (error) {
+      console.error("Error generating content:", error);
+      return "Sorry, an error ocurred"
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
-  //write ai stuff here
   const handleSend = async () => {
-    if (inputValue.trim()) {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { id: Date.now(), text: inputValue, sender: "user" },
-      ]);
+    if (!inputValue.trim()) return;
 
-      const newRequest: Request = {
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { id: Date.now(), text: inputValue, sender: "user" },
+    ]);
+
+    setInputValue("");
+
+    const isFixedQuery = suggestions.includes(inputValue);
+
+    if (isFixedQuery) {
+      const newCoreRequest: Request = {
         id: Date.now(),
         type: "fixed",
         category: "",
@@ -111,34 +128,21 @@ const ChatbotUI = () => {
         question: inputValue
       };
 
-      setRequest((prevRequests) => [...prevRequests, newRequest]);
-
-      setInputValue("")
-      console.log(messages)
-      await getResponse(newRequest)
-    };
-
-    try {
-      setIsLoading(true);
-      const response = await generateContent(inputValue);
+      setRequest((prevRequests) => [...prevRequests, newCoreRequest]);
+      await getCoreResponse(newCoreRequest)
+    } else {
+      const aiResponse = await getGeminiResponse(inputValue);
       setMessages((prevMessages) => [
         ...prevMessages,
-        { id: Date.now(), text: response, sender: "bot" },
-      ]);
-    } catch (error) {
-      console.error("Error generating content:", error);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { id: Date.now(), text: "Sorry, an error occurred.", sender: "bot" },
-      ]);
-    } finally {
-      setIsLoading(false);
+        { id: Date.now(), text: aiResponse, sender: "bot" },
+      ])
     }
   };
 
 
-  const handleSuggestionClick = (suggestion: string) => {
+  const handleSuggestionClick = async (suggestion: string) => {
     setInputValue(suggestion);
+    await handleSend();
   };
 
   const handleKeyPress = (e: any) => {
