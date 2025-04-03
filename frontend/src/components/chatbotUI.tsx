@@ -14,6 +14,11 @@ interface Message {
   sender: "user" | "bot";
 }
 
+interface PopularSuggestion {
+  suggestion_text: string;
+  times_selected: number;
+}
+
 interface Request {
   id: number | string;
   category: string;
@@ -31,15 +36,7 @@ const ChatbotUI = () => {
   // const [fixedContent, setFixedContent] = useState([])
   const [categories, setCategories] = useState<string[]>([]);
   const [subcategories, setSubcategories] = useState<string[]>([]);
-  const [popularSuggestions, setPopularSuggestions] = useState<string[]>([]);
-
-
-  // const suggestions = useMemo(() => [
-  //   "Major requirements?",
-  //   "Housing",
-  //   "Food and Dining",
-  //   "Computer Science"
-  // ], []);
+  const [popularSuggestions, setPopularSuggestions] = useState<PopularSuggestion[]>([]);
 
   useEffect(() => {
     const fetchSuggestions = async () => {
@@ -51,7 +48,10 @@ const ChatbotUI = () => {
         });
         setCategories(response.data.categories || []);
         setSubcategories(response.data.subcategories || []);
-        setPopularSuggestions(response.data.popular_suggestions.map((s: any) => s.text) || [])
+        setPopularSuggestions(response.data.popular_suggestions.map((s: any) => ({
+          suggestion_text: s.suggestion_text,
+          times_selected: s.times_selected,
+        })) || [])
       } catch (error) {
         console.error("Error fetching suggestions:", error);
       }
@@ -150,9 +150,24 @@ const ChatbotUI = () => {
     }
   };
 
+  const updatePopularSuggestions = async (text?: string) => {
+    try {
+      await api.post("suggestion-usage/",
+        { suggestion: text },
+        {
+          headers: {
+            Authorization: `Token ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+    } catch (error) {
+      console.error("Error tracking suggestion usage:", error);
+    }
+  };
 
   const handleSuggestionClick = (suggestion: string) => {
     handleSend(suggestion);
+    updatePopularSuggestions(suggestion);
   };
 
   const handleKeyPress = (e: any) => {
@@ -186,16 +201,11 @@ const ChatbotUI = () => {
 
       <div className="p-2 border-t border-gray-200 bg-white">
         <div className="flex flex-wrap gap-2 mb-2 m-5">
-          {/* {suggestions.map((suggestion, index) => (
-            <Card
-              key={index}
-              onClick={() => handleSuggestionClick(suggestion)}
-              className="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full border border-gray-200 transition-colors"
-            >
-              {suggestion}
-            </Card>
-          ))} */}
-          {[...popularSuggestions, ...categories, ...subcategories]
+          {[...new Set([
+            ...((popularSuggestions || []).map((s) => s.suggestion_text)),
+            ...categories,
+            ...subcategories
+          ])]
             .slice(0, 6) // Limit number of displayed suggestions
             .map((suggestion, index) => (
               <Card
