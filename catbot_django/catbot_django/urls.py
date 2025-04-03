@@ -24,5 +24,7 @@ urlpatterns = [
     path('fixed-content/', views.FixedContentList.as_view(), name='fixedcontent-list'),
     path('fixed-content/<int:pk>/', views.FixedContentDetail.as_view(), name='fixed-content-detail'), 
     path('get-api-key/', views.GetAPIKey.as_view(), name='get-api-key'),
+    path('suggestions/', views.GetSuggestionsView.as_view(), name="get_suggestions"),
+    path("suggestion-usage/", views.TrackSuggestionUsageView.as_view(),name="track_suggestion_usage")
 ]
 
