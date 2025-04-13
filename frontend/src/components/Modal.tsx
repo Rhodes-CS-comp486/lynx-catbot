@@ -29,8 +29,6 @@ const initGenAI = async () => {
 
 initGenAI()
 
-// const genAI = new GoogleGenerativeAI("AIzaSyBBqPn72UgJSMoO2XGV8vY7JPr80xGqxYc");
-// const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 export const generateContent = async (prompt: string) => {
   if (!model) {
