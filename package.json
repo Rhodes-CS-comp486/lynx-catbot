@@ -1,7 +1,35 @@
 {
   "dependencies": {
+    "@types/react": "^19.1.1",
+    "@types/react-dom": "^19.1.2",
     "axios": "^1.7.9",
     "jwt-decode": "^4.0.0",
-    "react-router-dom": "^7.1.5"
-  }
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.1.5",
+    "typescript": "^5.8.3",
+    "vite": "^6.2.6"
+  },
+  "name": "lynx-catbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rhodes-CS-comp486/lynx-catbot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Rhodes-CS-comp486/lynx-catbot/issues"
+  },
+  "homepage": "https://github.com/Rhodes-CS-comp486/lynx-catbot#readme"
 }
