@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import ChatbotUI from "./components/chatbotUI";
+import ChatbotUI from "./chatbotUI";
 
 const App = () => {
 
