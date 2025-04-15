@@ -12,7 +12,11 @@ RUN npm cache clean --force
 
 COPY package.json package-lock.json ./
 
+RUN ls -la /app
+
 RUN npm ci
+
+RUN npm rebuild
 
 COPY . ./
 
