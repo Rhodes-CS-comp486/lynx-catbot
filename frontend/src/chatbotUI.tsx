@@ -5,29 +5,61 @@ import ChatInput from '@/components/ChatInput';
 import Suggestions from '@/components/Suggestions';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { useSuggestions } from '@/hooks/useSuggestions';
+import { useSuggestionTracker } from './hooks/useSuggestionTracker';
 import { useChat } from '@/hooks/useChat';
+
+
+interface Request {
+  id: number | string;
+  category: string;
+  subcategory: string;
+  question: string;
+}
 
 const ChatbotUI = () => {
   const { categories, subcategories, popularSuggestions, groupedSubcategories } = useSuggestions();
   const { messages, isLoading, handleSend } = useChat(categories, subcategories, popularSuggestions);
   const [inputValue, setInputValue] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
+  const [request, setRequest] = useState<Request[]>([]);
+  const { updatePopularSuggestions } = useSuggestionTracker();
+
+
+  React.useEffect(() => {
+    console.log("Category: ", selectedCategory);
+    console.log("Subcategory: ", selectedSubcategory)
+  }, [selectedCategory, selectedSubcategory]);
+
+
 
   const handleSuggestionClick = (suggestion: string) => {
     const isCategory = categories.includes(suggestion);
-    const hasSubcategories = groupedSubcategories[suggestion]?.size > 0;
+    const isSubcategory = selectedCategory && groupedSubcategories[selectedCategory]?.includes(suggestion);
+    const hasSubcategories = isCategory && groupedSubcategories[suggestion]?.length > 0;
+
+    console.log("Clicked Suggestion:", suggestion);
+    console.log("Is Category?", isCategory);
+    console.log("Is Subcategory?", isSubcategory);
+    console.log("Has Subcategories?", hasSubcategories);
+    console.log("groupedSubcategories[suggestion]:", groupedSubcategories[suggestion]);
+
     if (isCategory && hasSubcategories) {
       setSelectedCategory((prev) => (prev === suggestion ? null : suggestion));
+    } else if (isSubcategory) {
+      setSelectedSubcategory((prev) => (prev === suggestion ? null : suggestion));
     } else {
       handleSend(suggestion);
       setInputValue("");
       setSelectedCategory(null);
+      setSelectedSubcategory(null);
     }
+    // updatePopularSuggestions(suggestion);
   };
 
   let suggestionList: string[];
   if (selectedCategory && groupedSubcategories[selectedCategory]) {
-    suggestionList = Array.from(groupedSubcategories[selectedCategory]);
+    suggestionList = groupedSubcategories[selectedCategory];
   } else {
     suggestionList = [
       ...new Set([
@@ -45,11 +77,6 @@ const ChatbotUI = () => {
     }
   };
 
-  // const suggestionList = [...new Set([
-  //   ...popularSuggestions.map(s => s.suggestion_text),
-  //   ...categories,
-  //   ...subcategories
-  // ])];
 
   return (
     <Card className="flex flex-col h-screen max-w-md mx-auto bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
@@ -57,18 +84,10 @@ const ChatbotUI = () => {
         {messages.map((m) => <ChatMessage key={m.id} text={m.text} sender={m.sender} />)}
         {isLoading && <LoadingSpinner />}
       </CardContent>
-      {selectedCategory && (
-        <div
-          className="text-sm text-blue-600 font-medium px-4 py-2 cursor-pointer"
-          onClick={() => setSelectedCategory(null)}
-        >
-          ← Back to all suggestions
-        </div>
-      )}
-      <Suggestions suggestions={suggestionList} onClick={handleSuggestionClick} />
+      <Suggestions suggestions={suggestionList} onClick={handleSuggestionClick} selectedCategory={selectedCategory} />
       <ChatInput
         value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
+        onChange={(e: any) => setInputValue(e.target.value)}
         onSend={() => {
           handleSend(inputValue);
           setInputValue("");

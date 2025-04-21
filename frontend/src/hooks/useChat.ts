@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import api from '@/api';
-import { generateContent } from '@/components/Modal';
+// import { generateContent } from '@/components/Modal';
+import { getGeminiResponse } from '@/lib/utils';
 
 interface Message {
   id: number | string;
@@ -51,7 +52,7 @@ export const useChat = (categories: string[], subcategories: string[], popularSu
     } else {
       try {
         setIsLoading(true);
-        const response = await generateContent(query);
+        const response = await getGeminiResponse(query);
         setMessages((prev) => [...prev, { id: uuidv4(), text: response, sender: "bot" }]);
       } catch (error) {
         setMessages((prev) => [...prev, { id: uuidv4(), text: "Error generating content.", sender: "bot" }]);

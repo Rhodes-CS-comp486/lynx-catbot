@@ -5,10 +5,24 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response 
-from rest_framework.decorators import api_view
+from rest_framework.reverse import reverse
 from django.conf import settings
+import google.generativeai as genai
 from rest_framework.permissions import IsAuthenticated
 
+import os
+
+
+class home(APIView):
+  permission_classes = [AllowAny]
+  def get(self, request, format=None):
+        return Response({
+            "fixed-content": reverse('fixedcontent-list', request=request, format=format),
+            "suggestions": reverse('get_suggestions', request=request, format=format),
+            "suggestion-usage": reverse('track_suggestion_usage', request=request, format=format),
+            "gemini-response": reverse('gemini_response', request=request, format=format),
+        }) 
+   
 
 class GetAPIKey(APIView):
   permission_classes = [AllowAny] # Change this once we add admin privileges
@@ -17,6 +31,25 @@ class GetAPIKey(APIView):
     if not gemini_key:
       return Response({"error":"Gemini Key is not set"}, status=500)
     return Response({"gemini_key": gemini_key})
+
+class GeminiResponseView(APIView):
+   permission_classes = [AllowAny]
+
+   def post(self, request):
+      user_query = request.data.get('query')
+
+      if not user_query:
+         return Response({"error": "Query is required."}, status=status.HTTP_400_BAD_REQUEST)
+    
+      try:
+        genai.configure(api_key=os.environ.get("GEMINI_KEY"))
+        model = genai.GenerativeModel('gemini-2.0-flash')
+        response = model.generate_content(user_query)
+        
+        return Response({'answer': response.text}, status=status.HTTP_200_OK)
+
+      except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class FixedContentList(generics.ListCreateAPIView):

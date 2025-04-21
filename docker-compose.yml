@@ -9,6 +9,9 @@ services:
     ports:
       - "8000:8000"
     env_file: .env
+    volumes:
+      - ./backend:/app
+      - backend_static:/app/static
     restart: unless-stopped
 
   frontend:
@@ -25,3 +28,4 @@ services:
 
 volumes:
   frontend_node_modules: {}
+  backend_static: {}
