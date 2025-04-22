@@ -33,23 +33,57 @@ class GetAPIKey(APIView):
     return Response({"gemini_key": gemini_key})
 
 class GeminiResponseView(APIView):
-   permission_classes = [AllowAny]
+    permission_classes = [AllowAny]
 
-   def post(self, request):
-      user_query = request.data.get('query')
+    def post(self, request):
+        user_query = request.data.get('query')
 
-      if not user_query:
-         return Response({"error": "Query is required."}, status=status.HTTP_400_BAD_REQUEST)
-    
-      try:
-        genai.configure(api_key=os.environ.get("GEMINI_KEY"))
-        model = genai.GenerativeModel('gemini-2.0-flash')
-        response = model.generate_content(user_query)
-        
-        return Response({'answer': response.text}, status=status.HTTP_200_OK)
+        if not user_query:
+            return Response({"error": "Query is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-      except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        try:
+            # Step 1: Query the database for relevant data
+            category = request.data.get("category", None)
+            subcategory = request.data.get("subcategory", None)
+
+            # Filter the FixedContent model based on the query parameters
+            queryset = FixedContent.objects.all()
+            if category:
+                queryset = queryset.filter(category__icontains=category)
+            if subcategory:
+                queryset = queryset.filter(subcategory__icontains=subcategory)
+
+            # Combine the relevant data into a context string
+            context_data = "\n".join(
+                [f"Q: {item.question}\nA: {item.answer}" for item in queryset]
+            )
+
+            # Step 2: Combine the system instructions, user's query, and database context
+            system_instructions = """
+            You are a friendly assistant to new students at Rhodes College. 
+            Your job is to answer questions provided with data about campus life and academics. 
+            Your answers should be brief, easy, and convenient to read.
+            """
+            prompt = f"""
+            {system_instructions}
+
+            Context:
+            {context_data}
+
+            User's Question:
+            {user_query}
+            """
+
+            # Step 3: Generate a response using the Gemini API
+            genai.configure(api_key=os.environ.get("GEMINI_KEY"))
+            model = genai.GenerativeModel('gemini-2.0-flash')
+            response = model.generate_content(prompt)
+
+            # Step 4: Return the AI's response
+            return Response({'answer': response.text}, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class FixedContentList(generics.ListCreateAPIView):
