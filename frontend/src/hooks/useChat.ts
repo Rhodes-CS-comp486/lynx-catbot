@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import api from '@/api';
 // import { generateContent } from '@/components/Modal';
 import { getGeminiResponse } from '@/lib/utils';
+import { serialize } from 'v8';
 
 interface Message {
   id: number | string;
@@ -17,10 +18,12 @@ interface Request {
   question: string;
 }
 
-export const useChat = (categories: string[], subcategories: string[], popularSuggestions: { suggestion_text: string }[]) => {
+export const useChat = (categories: string[], subcategories: string[], popularSuggestions: { suggestion_text: string }[], groupedSubcategories: Record<string, string[]>) => {
   const [messages, setMessages] = useState<Message[]>([
-    { id: 1, text: "Let’s chat!", sender: "bot" },
+    { id: uuidv4(), text: "Let’s chat!", sender: "bot" },
   ]);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const isFixedQuery = (query: string): boolean =>
@@ -34,6 +37,7 @@ export const useChat = (categories: string[], subcategories: string[], popularSu
         headers: { Authorization: `Token ${localStorage.getItem("authToken")}` },
         params: request,
       });
+      console.log("Response: ", response.data);
       const answer = response.data?.[0]?.answer ?? "I'm sorry, I don't have an answer for that question.";
       setMessages((prev) => [...prev, { id: uuidv4(), text: answer, sender: "bot" }]);
     } catch (error) {
@@ -45,7 +49,23 @@ export const useChat = (categories: string[], subcategories: string[], popularSu
 
   const handleSend = async (query: string) => {
     if (!query.trim()) return;
+
     setMessages((prev) => [...prev, { id: uuidv4(), text: query, sender: "user" }]);
+
+    if (selectedCategory && groupedSubcategories[selectedCategory]?.includes(query)) {
+      const newRequest: Request = { id: uuidv4(), category: selectedCategory, subcategory: query, question: "" };
+      await getCoreResponse(newRequest);
+      setSelectedCategory(null);
+      setSelectedSubcategory(null);
+      return
+    }
+
+    if (categories.includes(query)) {
+      setSelectedCategory(query);
+      setMessages((prev) => [...prev, { id: uuidv4(), text: `Okay great here are some relevant results for ${query}`, sender: "bot" }]);
+      return;
+    }
+
     if (isFixedQuery(query)) {
       const newRequest: Request = { id: uuidv4(), category: query, subcategory: "", question: "" };
       await getCoreResponse(newRequest);
@@ -62,5 +82,5 @@ export const useChat = (categories: string[], subcategories: string[], popularSu
     }
   };
 
-  return { messages, isLoading, handleSend };
+  return { messages, isLoading, handleSend, selectedCategory };
 };

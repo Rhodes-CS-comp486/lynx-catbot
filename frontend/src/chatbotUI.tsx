@@ -9,16 +9,10 @@ import { useSuggestionTracker } from './hooks/useSuggestionTracker';
 import { useChat } from '@/hooks/useChat';
 
 
-interface Request {
-  id: number | string;
-  category: string;
-  subcategory: string;
-  question: string;
-}
 
 const ChatbotUI = () => {
   const { categories, subcategories, popularSuggestions, groupedSubcategories } = useSuggestions();
-  const { messages, isLoading, handleSend } = useChat(categories, subcategories, popularSuggestions);
+  const { messages, isLoading, handleSend } = useChat(categories, subcategories, popularSuggestions, groupedSubcategories);
   const [inputValue, setInputValue] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
@@ -38,24 +32,26 @@ const ChatbotUI = () => {
     const isSubcategory = selectedCategory && groupedSubcategories[selectedCategory]?.includes(suggestion);
     const hasSubcategories = isCategory && groupedSubcategories[suggestion]?.length > 0;
 
-    console.log("Clicked Suggestion:", suggestion);
-    console.log("Is Category?", isCategory);
-    console.log("Is Subcategory?", isSubcategory);
-    console.log("Has Subcategories?", hasSubcategories);
-    console.log("groupedSubcategories[suggestion]:", groupedSubcategories[suggestion]);
-
     if (isCategory && hasSubcategories) {
       setSelectedCategory((prev) => (prev === suggestion ? null : suggestion));
     } else if (isSubcategory) {
       setSelectedSubcategory((prev) => (prev === suggestion ? null : suggestion));
-    } else {
-      handleSend(suggestion);
-      setInputValue("");
+    }
+    // else {
+    // handleSend(suggestion);
+    // setInputValue("");
+    // setSelectedCategory(null);
+    // setSelectedSubcategory(null);
+    // }
+    // updatePopularSuggestions(suggestion);
+    handleSend(suggestion)
+
+    setTimeout(() => {
       setSelectedCategory(null);
       setSelectedSubcategory(null);
-    }
-    // updatePopularSuggestions(suggestion);
-  };
+    }, 5000);
+  }
+
 
   let suggestionList: string[];
   if (selectedCategory && groupedSubcategories[selectedCategory]) {
