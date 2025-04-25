@@ -34,7 +34,7 @@ class GetAPIKey(APIView):
 class GeminiResponseView(APIView):
     permission_classes = [AllowAny]
 
-   def post(self, request):
+    def post(self, request):
       user_query = request.data.get('query')
       request_obj = request.data.get('request')
 
@@ -65,9 +65,9 @@ class GeminiResponseView(APIView):
   
         response = model.generate_content(prompt)
         
-        return Response({'answer': response.text}, status=status.HTTP_200_OK)
+        return Response({'answer': response.text}, status=status.HTTP_200_OK) 
 
-        except Exception as e:
+      except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
