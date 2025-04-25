@@ -20,10 +20,9 @@ const ChatbotUI = () => {
   const { updatePopularSuggestions } = useSuggestionTracker();
 
 
-  // React.useEffect(() => {
-  //   console.log("Category: ", selectedCategory);
-  //   console.log("Subcategory: ", selectedSubcategory)
-  // }, [selectedCategory, selectedSubcategory]);
+  React.useEffect(() => {
+    console.log(groupedSubcategories)
+  }, [groupedSubcategories]);
 
 
   const handleSuggestionClick = (suggestion: string) => {

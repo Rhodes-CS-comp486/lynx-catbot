@@ -58,6 +58,8 @@ class GeminiResponseView(APIView):
                     f"Context:\n- Category: {category}\n- Subcategory: {subcategory}\n"
                     f"User's Question: \"{question}\"\n\n"
                     "Provide a concise, friendly, and informative response. "
+                    "If the question is not clear, ask for clarification. \n"
+                    "Make sure the response is coincise and does not exeed 100 words. \n "
                     "If applicable, ask if the user would like more detail about deadlines, procedures, or resources."
                 )
   

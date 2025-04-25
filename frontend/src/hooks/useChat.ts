@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import api from '@/api';
-// import { generateContent } from '@/components/Modal';
 import { getGeminiResponse } from '@/lib/utils';
 import { FolderOpen } from 'lucide-react';
+import React from 'react';
 
 
 interface Message {
@@ -30,6 +30,10 @@ export const useChat = (categories: string[], subcategories: string[], popularSu
   const [contextRequest, setContextRequest] = useState<Request[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+
+  React.useEffect(() => {
+    console.log(lastFixedResponse);
+  }, [lastFixedResponse]);
   const isFixedQuery = (query: string): boolean =>
     categories.includes(query) || subcategories.includes(query) ||
     popularSuggestions.some((s) => s.suggestion_text === query);
@@ -115,38 +119,6 @@ export const useChat = (categories: string[], subcategories: string[], popularSu
       setIsLoading(false);
     }
 
-    // if(awaitingFollowup  && lastFixedResponse){
-    //   try{
-    //     setIsLoading(true);
-    //     const prompt = `The user last gathers these set of responses: "${lastFixedResponse}". Now they ask: "${query}. "Please provide more detailed information based on that.`;
-    //   }
-    // }
-
-    // if (selectedCategory && groupedSubcategories[selectedCategory]?.includes(query)) {
-    //   const newRequest: Request = { id: uuidv4(), category: selectedCategory, subcategory: query, question: "" };
-    //   await getCoreResponse(newRequest);
-    //   setSelectedCategory(null);
-    //   setSelectedSubcategory(null);
-    //   return
-    // }
-
-    // if (categories.includes(query)) {
-    //   setSelectedCategory(query);
-    //   setMessages((prev) => [...prev, { id: uuidv4(), text: `Okay great here are some relevant results for ${query}`, sender: "bot" }]);
-    //   return;
-    // }
-
-    // if (freeTextQuery){
-    //   try {
-    //     setIsLoading(true);
-    //     const response = await getGeminiResponse(query);
-    //     setMessages((prev) => [...prev, { id: uuidv4(), text: response, sender: "bot" }]);
-    //   } catch (error) {
-    //     setMessages((prev) => [...prev, { id: uuidv4(), text: "Error generating content.", sender: "bot" }]);
-    //   } finally {
-    //     setIsLoading(false);
-    //   }
-    // }
   };
 
   return { messages, isLoading, handleSend, selectedCategory };
