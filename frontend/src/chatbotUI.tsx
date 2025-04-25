@@ -21,10 +21,8 @@ const ChatbotUI = () => {
 
 
   React.useEffect(() => {
-    console.log("Category: ", selectedCategory);
-    console.log("Subcategory: ", selectedSubcategory)
-  }, [selectedCategory, selectedSubcategory]);
-
+    console.log(groupedSubcategories)
+  }, [groupedSubcategories]);
 
 
   const handleSuggestionClick = (suggestion: string) => {
@@ -37,21 +35,14 @@ const ChatbotUI = () => {
     } else if (isSubcategory) {
       setSelectedSubcategory((prev) => (prev === suggestion ? null : suggestion));
     }
-    // else {
-    // handleSend(suggestion);
-    // setInputValue("");
-    // setSelectedCategory(null);
-    // setSelectedSubcategory(null);
-    // }
     // updatePopularSuggestions(suggestion);
     handleSend(suggestion)
 
-    setTimeout(() => {
-      setSelectedCategory(null);
-      setSelectedSubcategory(null);
-    }, 5000);
+    // setTimeout(() => {
+    //   setSelectedCategory(null);
+    //   setSelectedSubcategory(null);
+    // }, 5000);
   }
-
 
   let suggestionList: string[];
   if (selectedCategory && groupedSubcategories[selectedCategory]) {
@@ -96,3 +87,4 @@ const ChatbotUI = () => {
 };
 
 export default ChatbotUI;
+
