@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import FixedContent, SuggestionUsage
+from .models import FixedContent, SuggestionUsage #, QuestionSuggestionUsage
 
 class FixedContentSerializer(serializers.ModelSerializer):
   class Meta:
@@ -30,3 +30,10 @@ class SuggestionUsageSerializer(serializers.ModelSerializer):
   class Meta:
     model = SuggestionUsage
     fields = ["suggestion_text", "times_selected"]
+"""
+class QuestionSuggestionSerializer(serializers.ModelSerializer):
+  class Meta:
+    model = QuestionSuggestionUsage
+    fields = ["suggestion_text", "times_selected"]
+
+"""

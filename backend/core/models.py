@@ -35,3 +35,13 @@ class SuggestionUsage(models.Model):
 
     def __str__(self):
         return f"{self.suggestion_text}: {self.times_selected} times"
+
+"""
+class QuestionSuggestionUsage(models.FixedContent):
+    def get_queryset(self):
+        return super().get_queryset().select('subcategory', 'question')
+
+    def __str__(self):
+        return f"{self.subcategory}: {self.question}"
+
+"""

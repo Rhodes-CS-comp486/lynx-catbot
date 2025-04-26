@@ -7,16 +7,24 @@ interface PopularSuggestion {
   times_selected: number;
 }
 
+interface QuestionSuggestion {
+  subcategory: string;
+  question: string;
+}
+
 interface DatasetItem {
   category: string;
   subcategory: string;
+  question: string;
 }
 
 export const useSuggestions = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [subcategories, setSubcategories] = useState<string[]>([]);
+  const [questions, setQuestions] = useState<string[]>([]);
   const [popularSuggestions, setPopularSuggestions] = useState<PopularSuggestion[]>([]);
   const [groupedSubcategories, setGroupedSubcategories] = useState<Record<string, string[]>>({});
+  const [groupedQuestions, setGroupedQuestions] = useState<Record<string, string[]>>({});
 
   useEffect(() => {
     const fetchSuggestions = async () => {
@@ -31,17 +39,27 @@ export const useSuggestions = () => {
         ]);
         const cats = suggestionsRes.data.categories || [];
         const subs = suggestionsRes.data.subcategories || [];
+        const ques = suggestionsRes.data.questions || [];
         const popular = (suggestionsRes.data.popular_suggestions || []).map((s: any) => ({
           suggestion_text: s.suggestion_text,
           times_selected: s.times_selected,
         }));
 
+
+
         const fullDataset: DatasetItem[] = fullDatasetRes.data || [];
 
         const grouped: Record<string, string[]> = {};
+        const groupedques: Record<string, string[]> = {};
         const counts: Record<string, Record<string, number>> = {};
 
         fullDataset.forEach((item: DatasetItem) => {
+          if(!groupedques[item.subcategory]){
+            groupedques[item.subcategory] = [item.question];
+          }
+          else{
+            (groupedques[item.subcategory]).push(item.question);
+          }
           if (!counts[item.category]) {
             counts[item.category] = {};
           }
@@ -61,6 +79,7 @@ export const useSuggestions = () => {
         setSubcategories(subs);
         setPopularSuggestions(popular);
         setGroupedSubcategories(grouped);
+        setGroupedQuestions(groupedques);
 
       } catch (error) {
         console.error("Error fetching suggestions:", error);
@@ -70,5 +89,5 @@ export const useSuggestions = () => {
     fetchSuggestions();
   }, []);
 
-  return { categories, subcategories, popularSuggestions, groupedSubcategories };
+  return { categories, subcategories, popularSuggestions, groupedSubcategories, groupedQuestions};
 };

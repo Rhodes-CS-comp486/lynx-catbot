@@ -11,11 +11,12 @@ import { useChat } from '@/hooks/useChat';
 
 
 const ChatbotUI = () => {
-  const { categories, subcategories, popularSuggestions, groupedSubcategories } = useSuggestions();
+  const { categories, subcategories, popularSuggestions, groupedSubcategories, groupedQuestions } = useSuggestions();
   const { messages, isLoading, handleSend } = useChat(categories, subcategories, popularSuggestions, groupedSubcategories);
   const [inputValue, setInputValue] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
   const [request, setRequest] = useState<Request[]>([]);
   const { updatePopularSuggestions } = useSuggestionTracker();
 
@@ -24,16 +25,23 @@ const ChatbotUI = () => {
     console.log(groupedSubcategories)
   }, [groupedSubcategories]);
 
+  React.useEffect(() => {
+    console.log(groupedQuestions)
+  }, [groupedQuestions]);
+
 
   const handleSuggestionClick = (suggestion: string) => {
     const isCategory = categories.includes(suggestion);
     const isSubcategory = selectedCategory && groupedSubcategories[selectedCategory]?.includes(suggestion);
+    const isQuestion = selectedCategory && selectedSubcategory && groupedQuestions[selectedSubcategory]?.includes(suggestion);
     const hasSubcategories = isCategory && groupedSubcategories[suggestion]?.length > 0;
 
     if (isCategory && hasSubcategories) {
       setSelectedCategory((prev) => (prev === suggestion ? null : suggestion));
     } else if (isSubcategory) {
       setSelectedSubcategory((prev) => (prev === suggestion ? null : suggestion));
+    } else if (isQuestion) {
+      setSelectedQuestion((prev)=>(prev === suggestion ? null : suggestion));
     }
     // updatePopularSuggestions(suggestion);
     handleSend(suggestion)

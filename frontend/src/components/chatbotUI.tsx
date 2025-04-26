@@ -36,6 +36,7 @@ const ChatbotUI = () => {
   // const [fixedContent, setFixedContent] = useState([])
   const [categories, setCategories] = useState<string[]>([]);
   const [subcategories, setSubcategories] = useState<string[]>([]);
+  const [questions, setQuestions] = useState<string[]>([]);
   const [popularSuggestions, setPopularSuggestions] = useState<PopularSuggestion[]>([]);
 
   useEffect(() => {
@@ -48,6 +49,7 @@ const ChatbotUI = () => {
         });
         setCategories(response.data.categories || []);
         setSubcategories(response.data.subcategories || []);
+        setQuestions(response.data.questions || []);
         setPopularSuggestions(response.data.popular_suggestions.map((s: any) => ({
           suggestion_text: s.suggestion_text,
           times_selected: s.times_selected,
@@ -128,7 +130,7 @@ const ChatbotUI = () => {
     setInputValue("");
 
     // const isFixedQuery = suggestions.includes(query);
-    const isFixedQuery = categories.includes(query) || subcategories.includes(query) || popularSuggestions.includes(query)
+    const isFixedQuery = categories.includes(query) || subcategories.includes(query) || questions.includes(query) || popularSuggestions.includes(query)
 
     if (isFixedQuery) {
       const newCoreRequest: Request = {

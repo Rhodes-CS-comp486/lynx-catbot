@@ -1,6 +1,6 @@
 from rest_framework import generics, status
-from .models import FixedContent, SuggestionUsage
-from .serializers import FixedContentSerializer, SuggestionUsageSerializer
+from .models import FixedContent, SuggestionUsage #, QuestionSuggestionUsage
+from .serializers import FixedContentSerializer, SuggestionUsageSerializer #, QuestionSuggestionSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
@@ -107,11 +107,13 @@ class GetSuggestionsView(APIView):
         categories = FixedContent.objects.values_list("category", flat=True).distinct()
         subcategories = FixedContent.objects.values_list("subcategory", flat=True).distinct()
         popular_suggestions = SuggestionUsage.objects.order_by("-times_selected")[:5]
+        groupedQuestions = FixedContent.objects.values_list("question", flat=True).distinct()
 
         return Response({
             "categories": list(categories),
             "subcategories": list(subcategories),
-            "popular_suggestions": SuggestionUsageSerializer(popular_suggestions, many=True).data
+            "popular_suggestions": SuggestionUsageSerializer(popular_suggestions, many=True).data,
+            "questions" : list(groupedQuestions)
         }, status=status.HTTP_200_OK)
 
 

@@ -19,12 +19,13 @@ interface Request {
   question: string;
 }
 
-export const useChat = (categories: string[], subcategories: string[], popularSuggestions: { suggestion_text: string }[], groupedSubcategories: Record<string, string[]>) => {
+export const useChat = (categories: string[], subcategories: string[], questions: string[], popularSuggestions: { suggestion_text: string }[], groupedSubcategories: Record<string, string[]>, groupedQuestions: Record<string, string[]>) => {
   const [messages, setMessages] = useState<Message[]>([
     { id: uuidv4(), text: "Let’s chat!", sender: "bot" },
   ]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
   const [lastFixedResponse, setLastFixedRespose] = useState<Response | null>(null);
   const [awaitingFollowup, setAwaitingFollowUp] = useState(false);
   const [contextRequest, setContextRequest] = useState<Request[]>([]);
@@ -35,7 +36,7 @@ export const useChat = (categories: string[], subcategories: string[], popularSu
     console.log(lastFixedResponse);
   }, [lastFixedResponse]);
   const isFixedQuery = (query: string): boolean =>
-    categories.includes(query) || subcategories.includes(query) ||
+    categories.includes(query) || subcategories.includes(query) || questions.includes(query) ||
     popularSuggestions.some((s) => s.suggestion_text === query);
 
   const getCoreResponse = async (request: Request) => {
@@ -67,7 +68,7 @@ export const useChat = (categories: string[], subcategories: string[], popularSu
 
     try {
       setIsLoading(true);
-      console.log(selectedCategory, selectedSubcategory)
+      console.log(selectedCategory, selectedSubcategory, selectedQuestion)
       if (awaitingFollowup && lastFixedResponse && selectedCategory && selectedSubcategory) {
 
         const followupRequest = {
@@ -82,10 +83,11 @@ export const useChat = (categories: string[], subcategories: string[], popularSu
         setAwaitingFollowUp(false);
         setSelectedCategory(null);
         setSelectedSubcategory(null);
+        setSelectedQuestion(null);
         return;
       }
-
       if (selectedCategory && groupedSubcategories[selectedCategory]?.includes(query)) {
+        console.log("maybe this works")
         const newRequest: Request = {
           id: uuidv4(),
           category: selectedCategory,
@@ -97,8 +99,21 @@ export const useChat = (categories: string[], subcategories: string[], popularSu
         await getCoreResponse(newRequest);
         return;
       }
+      else if (selectedCategory && selectedSubcategory && groupedQuestions[selectedSubcategory]?.includes(query)) {
+        const newRequest: Request = {
+          id: uuidv4(),
+          category: selectedCategory,
+          subcategory: selectedSubcategory,
+          question: query
+        };
+        setSelectedQuestion(query);
+        setContextRequest((prev) => [...prev, newRequest]);
+        await getCoreResponse(newRequest);
+        return;
+      }
 
       if (categories.includes(query)) {
+        console.log("hi")
         setSelectedCategory(query);
         setMessages((prev) => [
           ...prev,
@@ -110,6 +125,23 @@ export const useChat = (categories: string[], subcategories: string[], popularSu
         ]);
         return;
       }
+      else if(selectedCategory!=null && selectedCategory!="Major Requirements" && selectedCategory!="Minor Requirements"){
+        console.log("test")
+        if(subcategories.includes(query)){
+          console.log("made it")
+          setSelectedSubcategory(query);
+          setMessages((prev) => [
+          ...prev,
+          {
+            id: uuidv4(),
+            text: `Great! Here are some topics related to ${query}.`,
+            sender: "bot"
+          }
+        ]);
+        return;
+        }
+      }
+
       console.log("Query: ", query)
       const response = await api.post("gemini-response/", { query });
       setMessages((prev) => [...prev, { id: uuidv4(), text: response.data.answer, sender: "bot" }]);
