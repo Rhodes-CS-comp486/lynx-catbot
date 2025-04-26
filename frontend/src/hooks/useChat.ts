@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import api from '@/api';
-// import { generateContent } from '@/components/Modal';
 import { getGeminiResponse } from '@/lib/utils';
-import { serialize } from 'v8';
+import { FolderOpen } from 'lucide-react';
+import React from 'react';
+
 
 interface Message {
   id: number | string;
@@ -24,8 +25,15 @@ export const useChat = (categories: string[], subcategories: string[], popularSu
   ]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
+  const [lastFixedResponse, setLastFixedRespose] = useState<Response | null>(null);
+  const [awaitingFollowup, setAwaitingFollowUp] = useState(false);
+  const [contextRequest, setContextRequest] = useState<Request[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+
+  React.useEffect(() => {
+    console.log(lastFixedResponse);
+  }, [lastFixedResponse]);
   const isFixedQuery = (query: string): boolean =>
     categories.includes(query) || subcategories.includes(query) ||
     popularSuggestions.some((s) => s.suggestion_text === query);
@@ -39,7 +47,11 @@ export const useChat = (categories: string[], subcategories: string[], popularSu
       });
       console.log("Response: ", response.data);
       const answer = response.data?.[0]?.answer ?? "I'm sorry, I don't have an answer for that question.";
-      setMessages((prev) => [...prev, { id: uuidv4(), text: answer, sender: "bot" }]);
+      setLastFixedRespose(response.data);
+      setMessages((prev) => [...prev, { id: uuidv4(), text: answer, sender: "bot" },
+      { id: uuidv4(), text: "Would you like more detail on this topic?.", sender: "bot" },
+      ]);
+      setAwaitingFollowUp(true);
     } catch (error) {
       setMessages((prev) => [...prev, { id: uuidv4(), text: "Sorry, there was an error processing your request.", sender: "bot" }]);
     } finally {
@@ -48,39 +60,67 @@ export const useChat = (categories: string[], subcategories: string[], popularSu
   };
 
   const handleSend = async (query: string) => {
+
     if (!query.trim()) return;
 
     setMessages((prev) => [...prev, { id: uuidv4(), text: query, sender: "user" }]);
 
-    if (selectedCategory && groupedSubcategories[selectedCategory]?.includes(query)) {
-      const newRequest: Request = { id: uuidv4(), category: selectedCategory, subcategory: query, question: "" };
-      await getCoreResponse(newRequest);
-      setSelectedCategory(null);
-      setSelectedSubcategory(null);
-      return
-    }
+    try {
+      setIsLoading(true);
+      console.log(selectedCategory, selectedSubcategory)
+      if (awaitingFollowup && lastFixedResponse && selectedCategory && selectedSubcategory) {
 
-    if (categories.includes(query)) {
-      setSelectedCategory(query);
-      setMessages((prev) => [...prev, { id: uuidv4(), text: `Okay great here are some relevant results for ${query}`, sender: "bot" }]);
-      return;
-    }
-
-    if (isFixedQuery(query)) {
-      const newRequest: Request = { id: uuidv4(), category: query, subcategory: "", question: "" };
-      await getCoreResponse(newRequest);
-    } else {
-      try {
-        setIsLoading(true);
-        const response = await getGeminiResponse(query);
-        setMessages((prev) => [...prev, { id: uuidv4(), text: response, sender: "bot" }]);
-      } catch (error) {
-        setMessages((prev) => [...prev, { id: uuidv4(), text: "Error generating content.", sender: "bot" }]);
-      } finally {
-        setIsLoading(false);
+        const followupRequest = {
+          id: uuidv4(),
+          category: selectedCategory,
+          subcategory: selectedSubcategory,
+          question: query
+        }
+        console.log("Followup request: ", followupRequest)
+        const followupResponse = await api.post("gemini-response/", { request: followupRequest });
+        setMessages((prev) => [...prev, { id: uuidv4(), text: followupResponse.data.answer, sender: "bot" }]);
+        setAwaitingFollowUp(false);
+        setSelectedCategory(null);
+        setSelectedSubcategory(null);
+        return;
       }
+
+      if (selectedCategory && groupedSubcategories[selectedCategory]?.includes(query)) {
+        const newRequest: Request = {
+          id: uuidv4(),
+          category: selectedCategory,
+          subcategory: query,
+          question: ""
+        };
+        setSelectedSubcategory(query);
+        setContextRequest((prev) => [...prev, newRequest]);
+        await getCoreResponse(newRequest);
+        return;
+      }
+
+      if (categories.includes(query)) {
+        setSelectedCategory(query);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: uuidv4(),
+            text: `Great! Here are some topics related to ${query}.`,
+            sender: "bot"
+          }
+        ]);
+        return;
+      }
+      console.log("Query: ", query)
+      const response = await api.post("gemini-response/", { query });
+      setMessages((prev) => [...prev, { id: uuidv4(), text: response.data.answer, sender: "bot" }]);
+    } catch (error) {
+      setMessages((prev) => [...prev, { id: uuidv4(), text: "There was an error generating a response.", sender: "bot" }]);
+    } finally {
+      setIsLoading(false);
     }
+
   };
 
   return { messages, isLoading, handleSend, selectedCategory };
 };
+

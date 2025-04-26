@@ -9,7 +9,6 @@ from rest_framework.reverse import reverse
 from django.conf import settings
 import google.generativeai as genai
 from rest_framework.permissions import IsAuthenticated
-
 import os
 
 
@@ -33,23 +32,43 @@ class GetAPIKey(APIView):
     return Response({"gemini_key": gemini_key})
 
 class GeminiResponseView(APIView):
-   permission_classes = [AllowAny]
+    permission_classes = [AllowAny]
 
-   def post(self, request):
+    def post(self, request):
       user_query = request.data.get('query')
+      request_obj = request.data.get('request')
 
-      if not user_query:
+      if not user_query and not request_obj:
          return Response({"error": "Query is required."}, status=status.HTTP_400_BAD_REQUEST)
     
       try:
         genai.configure(api_key=os.environ.get("GEMINI_KEY"))
         model = genai.GenerativeModel('gemini-2.0-flash')
-        response = model.generate_content(user_query)
+
+
+        if user_query:
+          prompt = "You are a helpful assistant for new students at Rhodes College. Answer the following question in relation to the insitution: " + user_query 
+        else:
+          category = request_obj.get("category", '')
+          subcategory = request_obj.get("subcategory", '')
+          question = request_obj.get("question", '')
+
+          prompt = (
+                    f"You are a chatbot assisting new Rhodes College students.\n"
+                    f"Context:\n- Category: {category}\n- Subcategory: {subcategory}\n"
+                    f"User's Question: \"{question}\"\n\n"
+                    "Provide a concise, friendly, and informative response. "
+                    "If the question is not clear, ask for clarification. \n"
+                    "Make sure the response is coincise and does not exeed 100 words. \n "
+                    "If applicable, ask if the user would like more detail about deadlines, procedures, or resources."
+                )
+  
+        response = model.generate_content(prompt)
         
-        return Response({'answer': response.text}, status=status.HTTP_200_OK)
+        return Response({'answer': response.text}, status=status.HTTP_200_OK) 
 
       except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class FixedContentList(generics.ListCreateAPIView):
@@ -74,32 +93,6 @@ class FixedContentList(generics.ListCreateAPIView):
 
     return queryset
 
-
-  # queryset = FixedContent.objects.all()
-
-  
-
-  # def get(self, request):
-  #       question = request.GET.get("question", None)
-  #       subcategory = request.GET.get("subcategory", None) 
-  #       print('\n')
-  #       print(subcategory)
-  #       print(question)
-  #       queryset = FixedContent.objects.all()
-
-  #       if subcategory:
-  #         queryset = queryset.filter(subcategory__icontains=subcategory)
-  #         print("query set by subcateggoty", queryset, len(queryset))
-
-  #       if question:
-  #         queryset = queryset.filter(question__icontains=question)
-  #         print("queryset by question", queryset, len(queryset))
-
-  #       print(queryset)  
-  #       serializer = FixedContentSerializer(queryset, many=True)
-  #       return Response(serializer.data)
-   
-  # permission_classes = [AllowAny]
   
 
 class FixedContentDetail(generics.RetrieveUpdateDestroyAPIView):
