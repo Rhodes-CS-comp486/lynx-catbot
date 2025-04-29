@@ -38,6 +38,8 @@ class GeminiResponseView(APIView):
       user_query = request.data.get('query')
       request_obj = request.data.get('request')
 
+      print(user_query)
+      print(request_obj)
       if not user_query and not request_obj:
          return Response({"error": "Query is required."}, status=status.HTTP_400_BAD_REQUEST)
     
