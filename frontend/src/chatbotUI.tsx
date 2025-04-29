@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import ChatMessage from '@/components/ChatMessage';
 import ChatInput from '@/components/ChatInput';
@@ -7,8 +7,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import { useSuggestions } from '@/hooks/useSuggestions';
 import { useSuggestionTracker } from './hooks/useSuggestionTracker';
 import { useChat } from '@/hooks/useChat';
-
-
+import { motion, AnimatePresence } from 'framer-motion';
 
 const ChatbotUI = () => {
   const { categories, subcategories, popularSuggestions, groupedSubcategories } = useSuggestions();
@@ -18,12 +17,15 @@ const ChatbotUI = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
   const [request, setRequest] = useState<Request[]>([]);
   const { updatePopularSuggestions } = useSuggestionTracker();
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
+  // React.useEffect(() => {
+  //   console.log(groupedSubcategories)
+  // }, [groupedSubcategories]);
 
-  React.useEffect(() => {
-    console.log(groupedSubcategories)
-  }, [groupedSubcategories]);
-
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isLoading]);
 
   const handleSuggestionClick = (suggestion: string) => {
     const isCategory = categories.includes(suggestion);
@@ -67,11 +69,48 @@ const ChatbotUI = () => {
 
   return (
     <Card className="flex flex-col h-screen max-w-md mx-auto bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
-      <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((m) => <ChatMessage key={m.id} text={m.text} sender={m.sender} />)}
-        {isLoading && <LoadingSpinner />}
+      <CardContent className="flex-1 overflow-y-auto p-4 flex flex-col space-y-4">
+        <AnimatePresence initial={false}>
+          {messages.map((m) => (
+            <motion.div
+              key={m.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ChatMessage text={m.text} sender={m.sender} />
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
+        {isLoading && (
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <LoadingSpinner />
+          </motion.div>
+        )}
+
+        <div ref={messagesEndRef} />
       </CardContent>
-      <Suggestions suggestions={suggestionList} onClick={handleSuggestionClick} selectedCategory={selectedCategory} />
+
+      <motion.div
+        key={selectedCategory}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Suggestions
+          suggestions={suggestionList}
+          onClick={handleSuggestionClick}
+          selectedCategory={selectedCategory}
+        />
+      </motion.div>
+
       <ChatInput
         value={inputValue}
         onChange={(e: any) => setInputValue(e.target.value)}
