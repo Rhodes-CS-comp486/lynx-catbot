@@ -38,8 +38,6 @@ class GeminiResponseView(APIView):
       user_query = request.data.get('query')
       request_obj = request.data.get('request')
 
-      print(user_query)
-      print(request_obj)
       if not user_query and not request_obj:
          return Response({"error": "Query is required."}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -49,7 +47,9 @@ class GeminiResponseView(APIView):
 
 
         if user_query:
-          prompt = "You are a helpful assistant for new students at Rhodes College. Answer the following question in relation to the insitution: " + user_query 
+          prompt = (f"You are a helpful assistant for new students at Rhodes College. Answer the following question in relation to the insitution: {user_query}."
+                    f"Make your response concise and approachable. Limit it to 100 words if necessary."
+                        )
         else:
           category = request_obj.get("category", '')
           subcategory = request_obj.get("subcategory", '')

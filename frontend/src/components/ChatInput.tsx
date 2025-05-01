@@ -17,9 +17,9 @@ const ChatInput: React.FC<Props> = ({ value, onChange, onSend, onKeyPress }) => 
       onChange={onChange}
       onKeyPress={onKeyPress}
       placeholder="Type your message..."
-      className="flex-1"
+      className="flex-1 text-white"
     />
-    <Button type="button" onClick={onSend} size="icon" className="!bg-blue-600 hover:!bg-blue-400">
+    <Button type="button" onClick={onSend} size="icon" className="!bg-red-600 hover:!bg-red-400">
       <Send size={18} className="text-white" />
     </Button>
   </CardFooter>
