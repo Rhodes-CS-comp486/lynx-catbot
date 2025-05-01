@@ -65,9 +65,15 @@ export const useChat = (categories: string[], subcategories: string[], popularSu
       console.log("Response: ", response.data[0].answer);
       const answer = response.data?.[0]?.answer ?? "I'm sorry, I don't have an answer for that question.";
       setLastResponse(response.data);
-      setMessages((prev) => [...prev, { id: uuidv4(), text: answer, sender: "bot" },
+      if(selectedCategory == "Major Requirements" || selectedCategory=="Minor Requirements") {
+        setMessages((prev) => [...prev, { id: uuidv4(), text: answer, sender: "bot" },
       { id: uuidv4(), text: "Would you like more detail on this topic?.", sender: "bot" },
       ]);
+      }
+      else {
+        setMessages((prev) => [...prev, { id: uuidv4(), text: answer, sender: "bot" }]);
+      }
+
       setAwaitingFollowUp(true);
     } catch (error) {
       setMessages((prev) => [...prev, { id: uuidv4(), text: "Sorry, there was an error processing your request.", sender: "bot" }]);
@@ -113,7 +119,12 @@ export const useChat = (categories: string[], subcategories: string[], popularSu
           category: selectedCategory,
           subcategory: query,
           question: ""
-        };
+          }
+
+        if (selectedCategory!="Major Requirements" && selectedCategory!="Minor Requirements") {
+          newRequest.question = "AAA"
+        }
+
         setSelectedSubcategory(query);
         setContextRequest((prev) => [...prev, newRequest]);
         await getCoreResponse(newRequest);
