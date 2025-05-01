@@ -10,6 +10,7 @@ interface PopularSuggestion {
 interface DatasetItem {
   category: string;
   subcategory: string;
+  question: string;
 }
 
 export const useSuggestions = () => {
@@ -36,11 +37,15 @@ export const useSuggestions = () => {
           times_selected: s.times_selected,
         }));
 
+
         const fullDataset: DatasetItem[] = fullDatasetRes.data || [];
+        console.log("data: ", fullDataset[0])
+
 
         const grouped: Record<string, string[]> = {};
         const counts: Record<string, Record<string, number>> = {};
 
+        //fullDataset.sort(key=lambda x: x[4])(a,b)=> a.question - b.question)
         fullDataset.forEach((item: DatasetItem) => {
           if (!counts[item.category]) {
             counts[item.category] = {};
