@@ -68,7 +68,7 @@ const ChatbotUI = () => {
 
 
   return (
-    <Card className="flex flex-col h-screen max-w-md mx-auto bg-gray-50 border border-gray-200 rounded-lg overflow-hidden">
+    <Card className="flex flex-col h-screen max-w-md mx-auto bg-gray-400 border border-gray-200 rounded-lg overflow-hidden">
       <CardContent className="flex-1 overflow-y-auto p-4 flex flex-col space-y-4">
         <AnimatePresence initial={false}>
           {messages.map((m) => (

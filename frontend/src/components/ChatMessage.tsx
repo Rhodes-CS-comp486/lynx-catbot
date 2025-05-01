@@ -12,10 +12,10 @@ interface Props {
 const ChatMessage: React.FC<Props> = ({ text, sender }) => (
   <div className={`flex ${sender === "user" ? "justify-end" : "justify-start"}`}>
     <div className={`flex items-start space-x-2 max-w-xs ${sender === "user" ? "flex-row-reverse space-x-reverse" : ""}`}>
-      <Card className={`p-1 rounded-full ${sender === "user" ? "bg-blue-500" : "bg-gray-300"}`}>
+      <Card className={`p-1 rounded-full ${sender === "user" ? "bg-red-600" : "bg-gray-300"}`}>
         {sender === "user" ? <User size={16} className="text-white" /> : <Bot size={16} className="text-gray-700" />}
       </Card>
-      <Card className={`p-3 rounded-lg ${sender === "user" ? "bg-blue-500 text-white" : "bg-white border border-gray-200"}`}>
+      <Card className={`p-3 rounded-lg ${sender === "user" ? "bg-red-600 text-white border-none" : "bg-white border border-gray-200"}`}>
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[rehypeHighlight]}
