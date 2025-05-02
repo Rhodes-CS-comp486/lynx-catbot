@@ -131,3 +131,4 @@ class TrackSuggestionUsageView(APIView):
         suggestion.save()
 
         return Response({"message": "Suggestion count updated."}, status=status.HTTP_200_OK)
+    
