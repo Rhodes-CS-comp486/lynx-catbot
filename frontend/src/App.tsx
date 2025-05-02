@@ -4,7 +4,7 @@ import ChatbotUI from "./chatbotUI";
 const App = () => {
 
   return (
-    <div>
+    <div >
       <ChatbotUI />
     </div>
   );
