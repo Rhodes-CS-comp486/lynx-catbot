@@ -48,7 +48,8 @@ class GeminiResponseView(APIView):
 
         if user_query:
           prompt = (f"You are a helpful assistant for new students at Rhodes College. Answer the following question in relation to the insitution: {user_query}."
-                    f"Make your response concise and approachable. Limit it to 100 words if necessary."
+                    f"Make your response concise and approachable. If necessary try to find infromation in teh Rhodes College Website."
+                    f"Limit it to 100 words if necessary."
                         )
         else:
           category = request_obj.get("category", '')
@@ -63,6 +64,7 @@ class GeminiResponseView(APIView):
                     "If the question is not clear, ask for clarification. \n"
                     "Make sure the response is coincise and does not exeed 100 words. \n "
                     "If applicable, ask if the user would like more detail about deadlines, procedures, or resources."
+                    "If necessary parse throguh the Rhodes College website to find information"
                 )
   
         response = model.generate_content(prompt)

@@ -5,7 +5,6 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL as string,
 });
 
-console.log(api.defaults.baseURL);
 
 api.interceptors.request.use(
   (config: any) => {
@@ -20,4 +19,5 @@ api.interceptors.request.use(
   }
 )
 
-export default api
+export default api;
+
