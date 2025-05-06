@@ -74,7 +74,7 @@ const ChatbotUI = () => {
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     typingTimeoutRef.current = setTimeout(() => {
       setShowSuggestions(true);
-    }, 5000);
+    }, 10000);
 
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -146,7 +146,7 @@ const ChatbotUI = () => {
                         transition={{ duration: 0.2 }}
                         className="w-full"
                       >
-                        <div className="text-sm font-semibold mb-2 text-gray-600 dark:text-gray-300">
+                        <div className="text-sm font-semibold mb-2 text-gray-600 ">
                           {selectedCategory} Subtopics
                         </div>
                         <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto pr-1">
@@ -155,7 +155,8 @@ const ChatbotUI = () => {
                               key={sub}
                               onClick={() => handleSuggestionClick(sub)}
                               whileTap={{ scale: 0.95 }}
-                              className="px-3 py-1 rounded-full bg-white text-gray-800 hover:bg-blue-100 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 transition-all duration-200 shadow-sm"
+                              className="px-3 py-1 rounded-full !bg-white !text-gray-800 hover:bg-blue-100 transition-all duration-200 shadow-sm"
+
                             >
                               {sub}
                             </motion.button>
@@ -163,7 +164,7 @@ const ChatbotUI = () => {
                         </div>
                         <button
                           onClick={() => setSelectedCategory(null)}
-                          className="text-sm text-blue-600 underline mt-3"
+                          className="text-sm !bg-white text-blue-600 underline mt-3"
                         >
                           Back to categories
                         </button>
@@ -174,7 +175,7 @@ const ChatbotUI = () => {
                           key={suggestion}
                           onClick={() => handleSuggestionClick(suggestion)}
                           whileTap={{ scale: 0.95 }}
-                          className="px-3 py-1 rounded-full bg-white text-gray-800 hover:bg-blue-100 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700 transition-all duration-200 shadow-sm"
+                          className="px-3 py-1 rounded-full !bg-white !text-gray-800 hover:bg-blue-100 transition-all duration-200 shadow-sm"
                         >
                           {suggestion}
                         </motion.button>

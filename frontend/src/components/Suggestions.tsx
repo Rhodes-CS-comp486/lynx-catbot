@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 interface Props {
   suggestions: string[];
   onClick: (text: string) => void;
+  
 }
 
 const Suggestions: React.FC<Props> = ({ suggestions, onClick }) => (
