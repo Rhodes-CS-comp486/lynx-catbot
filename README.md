@@ -62,3 +62,75 @@ git clone https://github.com/Rhodes-CS-comp486/lynx-catbot.git
 cd lynx-catbot
 
 ```
+
+### Environment Setup
+
+Create a .env file in the project root (same directory as docker-compose.yml): 
+
+```
+# Database settings
+DB_NAME=catbot
+DB_USER=postgres
+DB_PASSWORD=your_password
+DB_HOST=db
+DB_PORT=5432
+
+# AI + Django settings
+GOOGLE_API_KEY=your_gemini_api_key
+DJANGO_SECRET_KEY=your_secret_key
+
+# Frontend API base URL
+VITE_API_URL=http://localhost:8000
+```
+
+(Login credentials for database can be acquired upon request)
+
+### Docker Container(Recommended)
+
+Host Links
+
+- Frontend: http://localhost:5173
+- Backend: http://localhost:8000
+
+Make sure your ```.env``` is present in the root before running this command
+
+```
+docker-compose up --build
+```
+
+###  Manual Setup 
+
+#### Backend Setup
+Install required dependecies 
+```
+cd backend
+pip install -r requirements.txt
+```
+Setup local migrations
+```
+python manage.py migrate
+```
+Run server for client connection
+
+```
+python manage.py runserver
+```
+#### Frontend Setup
+Install required node modules
+```
+cd frontend
+npm install
+npm fund - if dependecies are not funded automatically)
+```
+Run client instance
+
+```
+npm run dev
+```
+
+
+### API Documentation
+
+For more detailed API documentation:
+
+- Visit: http://localhost:8000/swagger/
