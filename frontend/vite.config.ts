@@ -7,7 +7,6 @@ import path from 'path';
 export default defineConfig(({ mode }) => {
   // Load .env from root
   const env = loadEnv(mode, path.resolve(__dirname, '..'), '');
-  console.log('Loaded env:', env)
 
   return {
     plugins: [react(), tailwindcss()],

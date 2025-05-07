@@ -1,5 +1,13 @@
 # Lynx CatBot
-
+## Table of Contents
+- [Project Description](#project-description)
+- [Features](#key-features)
+- [System Diagram](#system-diagram)
+- [Example](#example-run)
+- [Dependencies](#project-dependencies)
+- [Quick Start Guide](#quick-start-guide)
+- [API Documentation](#api-documentation)
+- [Contributors](#contributors)
 ## Project Description
 
 Lynx CatBot is an intelligent web-based chatbot assistant built to support new and prospective students at Rhodes College. It is designed to provide concise, accurate, and approachable answers to questions about academics, student life, housing, and more. Built with a React frontend and Django backend, the chatbot integrates dynamic AI-generated responses with a curated FAQ knowledge base to offer a robust and user-friendly support experience.
@@ -12,7 +20,7 @@ Lynx CatBot is an intelligent web-based chatbot assistant built to support new a
 - **Backend Admin Panel** for managing questions and answers.
 - **Dockerized Deployment** for local and remote scalability.
 
-### 🖥️ System Diagram
+### System Diagram
 
 ![System Diagram](docs/system_diagram.png) <!-- Replace with your actual image path -->
 
@@ -24,7 +32,7 @@ Lynx CatBot is an intelligent web-based chatbot assistant built to support new a
 
 ---
 
-## 🧩 Project Dependencies
+## Project Dependencies
 
 ### ⚙️ Software Libraries
 
@@ -51,7 +59,7 @@ Lynx CatBot is an intelligent web-based chatbot assistant built to support new a
 
 ---
 
-## 🚀 Quick Start Guide
+## Quick Start Guide
 
 ### 🛠️ Installation Instructions
 
@@ -134,3 +142,16 @@ npm run dev
 For more detailed API documentation:
 
 - Visit: http://localhost:8000/swagger/
+
+
+## Contributors
+<!-- | Name           | GitHub Profile                                         | Contributions (%) |
+|----------------|--------------------------------------------------------|-------------------|
+| Eddie Puebla   | [@EddiePueb1](https://github.com/EddiePueb1)           | 68.1%             |
+| Harper Kole    | [@harperkole](https://github.com/harperkole)           | 24.1%             |
+| JD Willis      | [@JD-Willis1](https://github.com/JD-Willis1)           | 7.8%              | -->
+
+See [Contributor Graph](https://github.com/Rhodes-CS-comp486/lynx-catbot/graphs/contributors) for live commit history.
+
+![GitHub contributors](https://img.shields.io/github/contributors/Rhodes-CS-comp486/lynx-catbot?style=flat-square)
+
